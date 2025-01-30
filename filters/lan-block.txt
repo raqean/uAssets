@@ -1,12 +1,19 @@
 ﻿[uBlock Origin]
 ! Title: Block Outsider Intrusion into LAN
-! Last modified: Thu, 06 Jun 2024 21:33:33 +0000
+! Last modified: Thu, 30 Jan 2025 19:49:08 +0000
 ! Expires: 29 days
 ! Description: Prevents public internet sites from digging into your local LAN files.
 ! Requested here: https://github.com/uBlockOrigin/uAssets/issues/4318
 ! Revived for: https://github.com/uBlockOrigin/uBlock-issues/issues/1070
 ! Homepage: https://github.com/uBlockOrigin/uAssets
 ! License: https://github.com/uBlockOrigin/uAssets/blob/master/LICENSE
+!
+! https://github.com/uBlockOrigin/uBlock-issues/issues/1070#issuecomment-707237653
+! https://github.com/uBlockOrigin/uBlock-discussions/discussions/910
+!#if cap_ipaddress
+*$strict3p,ipaddress=lan,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+!#endif
+!#if !cap_ipaddress
 !
 ! ——— LAN
 ! https://en.wikipedia.org/wiki/Private_network
@@ -33,12 +40,18 @@
 /^\w+:\/\/127\.(?:(?:[1-9]?\d|1\d\d|2(?:[0-4]\d|5[0-5]))\.){2}(?:[1-9]?\d|1\d\d|2(?:[0-4]\d|5[0-5]))[:/]/$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||[::1]^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||localhost^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+!#endif
 !
 ! ——— any local
 ! https://en.wikipedia.org/wiki/0.0.0.0
 !
 ||0.0.0.0^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||[::]^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+!
+! ——— .internal TLD
+! https://en.wikipedia.org/wiki/.internal
+!
+||internal^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 !
 ! ——— .local TLD
 ! https://en.wikipedia.org/wiki/.local
@@ -72,6 +85,7 @@
 ||hitronhub.home^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||homerouter.cpe^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||huaweimobilewifi.com^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+||kabel.box^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||localbattle.net^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||my.keenetic.net^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||my.router^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
@@ -95,6 +109,8 @@
 ||tplinkplclogin.net^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||tplinkrepeater.net^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||tplinkwifi.net^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+||unifi^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
+||unifi.localdomain^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||web.setup^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 ||web.setup.home^$3p,domain=~localhost|~127.0.0.1|~[::1]|~0.0.0.0|~[::]|~local
 !
@@ -120,6 +136,9 @@
 !
 ! https://github.com/uBlockOrigin/uAssets/issues/23388
 @@||localhost^$from=deutsche-rentenversicherung.de
-@@||127.0.0.1^$from=bund.de|organspende-register.de|bayernportal.de|mv-serviceportal.de
+@@||127.0.0.1^$from=bund.de|organspende-register.de|bayernportal.de|mv-serviceportal.de|governikus.de|deutsche-rentenversicherung.de
+!
+! https://github.com/uBlockOrigin/uAssets/pull/24488
+@@||localhost^$websocket,domain=www.faceit.com
 !
 ! ——— END

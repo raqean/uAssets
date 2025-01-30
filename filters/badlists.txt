@@ -28,6 +28,7 @@ https://www.aadvantageeshopping.com/adBlockWhitelist.php
 https://multiup.org/list_adblock.txt
 https://multiup.io/list_adblock.txt
 https://downloads.zohocdn.com/ulaa-browser/release/adb/stable/ulaa-filters.txt
+https://cdn.dsbn.org/ublock_dsbn.txt
 
 # https://www.reddit.com/r/uBlockOrigin/comments/143k8lm/
 https://www.topcashback.co.uk/misc/AdBlockWhiteList.aspx
@@ -72,3 +73,17 @@ https://cdn.statically.io/gh/bogachenko/fuckfuckadblock/master/fuckfuckadblock.t
 https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=3
 # https://www.reddit.com/r/uBlockOrigin/comments/1cl3qgh/ads_getting_through/
 https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=raw
+# https://github.com/uBlockOrigin/uAssets/issues/26120
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=rawlist
+
+# interfere normal operation; generic exceptions to ad servers and analytics
+https://raw.githubusercontent.com/Apious/whoru/main/Source1.txt
+https://raw.githubusercontent.com/Apious/whoru/main/Source2.txt
+
+# Ad-Shield allowlist
+https://error-report.com/filter/allowlist
+
+# Not a list
+# https://www.reddit.com/r/uBlockOrigin/comments/1hcqkoe/ubo_breaking_oldredditres_and_youtube/
+https://raw.githubusercontent.com/pixeltris/TwitchAdSolutions/master/video-swap-new/video-swap-new-ublock-origin.js
+https://raw.githubusercontent.com/pixeltris/TwitchAdSolutions/master/vaft/vaft-ublock-origin.js

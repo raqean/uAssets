@@ -1,5 +1,5 @@
 ! Title: uBlock filters – Privacy
-! Last modified: Mon, 17 Jun 2024 09:48:15 +0000
+! Last modified: Thu, 30 Jan 2025 19:49:08 +0000
 ! Expires: 7 days
 ! Description: |
 !   Some of these filters make use of the `important` filter option,`
@@ -10,11 +10,6 @@
 !
 ! GitHub issues: https://github.com/uBlockOrigin/uAssets/issues
 ! GitHub pull requests: https://github.com/uBlockOrigin/uAssets/pulls
-
-! https://adblockplus.org/forum/viewtopic.php?f=2&t=38703
-! 1st-party "recommendations" should never depends on a 3rd-party doing the job:
-!   this is just disguised tracking
-||taboola.com^$3p
 
 ! Redirect to neutered Google Analytics
 ||google-analytics.com/analytics.js$script,redirect=google-analytics_analytics.js:5
@@ -89,10 +84,18 @@ www.reddit.com##+js(rpnt, script, "outboundUrl", "outbound")
 www.reddit.com##+js(json-prune, data.*.elements.edges.[].node.outboundLink)
 www.reddit.com##+js(json-prune, data.children.[].data.outbound_link)
 ||redditstatic.com/shreddit/sentry-$domain=reddit.com
-reddit.com##+js(aopw, STICKY_CANARY)
-! reddit.com##+js(aost, fetch, Ee/</<)
-reddit.com##reddit-breadcrumbs
 ||www.reddit.com/|$xhr,1p,method=post
+||reddit.com^$doc,removeparam=/web_only=/
+||reddit.com^$doc,removeparam=/deep_link=/
+||reddit.com^$doc,removeparam=correlation_id
+||reddit.com^$doc,removeparam=ref
+||reddit.com^$doc,removeparam=ref_campaign
+||reddit.com^$doc,removeparam=ref_source
+||reddit.com^$doc,removeparam=utm_content
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3206#issuecomment-2406041484
+||click.redditmail.com/CL0/$urlskip=/\/CL0\/(http.*?)\/\d\/[a-f0-9-]+\// -uricomponent
+! remove.bg
+||rd.remove.bg/CL0/http$doc,urlskip=/\/CL0\/(http.*?)\/\d\/[a-f0-9-]+\// -uricomponent
 
 ! https://github.com/uBlockOrigin/uAssets/pull/5997
 docs.google.com##+js(no-xhr-if, method:POST url:/logImpressions)
@@ -105,6 +108,8 @@ www.google.*###main a[href][data-sb^="/url?"]:remove-attr(data-sb)
 www.google.*##+js(href-sanitizer, #main a[href^="/url?q=http"], ?q)
 www.google.*###main a[href][ping^="/url?"]:remove-attr(ping)
 !#endif
+! https://www.reddit.com/r/uBlockOrigin/comments/1eppef9/is_it_possible_to_hide_googles_annoying_redirect/
+www.google.*##+js(set-attr, c-wiz[data-p] [data-query] a[target="_blank"][role="link"], rlhc, 1)
 
 ! https://github.com/uBlockOrigin/uAssets/issues/6538
 liberation.fr,officedepot.fr,oui.sncf##+js(acs, document.createElement, '.js')
@@ -187,9 +192,6 @@ tweakers.net##+js(aost, btoa, send)
 ! https://github.com/AdguardTeam/AdguardFilters/issues/75098
 ||stats.webgames.io^
 
-! https://www.reddit.com/r/uBlockOrigin/comments/niiytr/help_needed_filtering_wwwsporizle1pw/
-||sporizle1.pw/embed/*?stat=$frame
-
 ! https://github.com/uBlockOrigin/uAssets/issues/9273
 ||blogfoster.com^$3p
 
@@ -214,17 +216,27 @@ search.brave.com##+js(no-fetch-if, body:browser)
 ! https://github.com/uBlockOrigin/uAssets/issues/9932
 /\/[a-z0-9]{12}\/[a-zA-Z0-9\/\+\-]{97,106}$/$match-case,script,1p,strict1p
 /^https?:\/\/(?!assets|script|static)(?:[0-9a-z]{10,13}|[0-9a-z]{6})\.[0-9A-Za-z.\-_]+\/(?=[0-9a-z+\/\-]*[A-Z])[0-9A-Za-z+\/\-]{80,106}$/$script,1p,match-case,strict3p
+/^https?:\/\/(?!assets|script|static)(?:[0-9a-z]{4,25}|[0-9a-z]{6})\.www\.eldorado\.gg\/(?=[0-9a-z+\/\-]*[A-Z])[0-9A-Za-z+\/\-]{80,106}$/$script,1p,match-case,strict3p,domain=eldorado.gg
+/^https?:\/\/(?!assets|script|static)(?:[0-9a-z]{4,25}|[0-9a-z]{6})\.www\.bolighub\.dk\/(?=[0-9a-z+\/\-]*[A-Z])[0-9A-Za-z+\/\-]{80,106}$/$script,1p,match-case,strict3p,domain=bolighub.dk
 /dataunlocker$script,1p,domain=~dataunlocker.com
-/www\.eldorado\.gg\/[a-zA-Z0-9]{10,20}\.js/$1p,script,domain=eldorado.gg
 ||data-saver-cindi.herokuapp.com^
+||franchiseplus.nl^$csp=script-src * 'unsafe-inline' 'wasm-unsafe-eval' data: blob: mediastream: filesystem:
+||nikitaeverywhere.com^$script,xhr,1p
+@@||nikitaeverywhere.com/static/js/main-*.js|$script,1p
+@@||nikitaeverywhere.com/nikitaeverywhere-com-content/data.json|$xhr,1p
 !#if cap_html_filtering
-botcomics.com,cefirates.com,chandlerorchards.com,comicleaks.com,marketdata.app,monumentmetals.com,tapmyback.com,ping.gg,revistaferramental.com.br,hawpar.com,alpacafinance.org,nookgaming.com,enkeleksamen.no,kvest.ee,creatordrop.com,panpots.com,cybernetman.com,bitdomain.biz,gerardbosch.xyz,fort-shop.kiev.ua,accuretawealth.com,resourceya.com,tracktheta.com,adaptive.marketing,camberlion.com,replai.io,trybawaryjny.pl##^script:has-text("join('')")
-alpacafinance.org,tt.live,future-fortune.com,abhijith.page,furucombo.app,madrigalmaps.com,adventuretix.com,bolighub.dk##^script:has-text('join("")')
-panprices.com,intercity.technology,freelancer.taxmachine.be,kodalia.com,adria.gg,fjlaboratories.com,emanualonline.com##^script:has-text(api.dataunlocker.com)
+botcomics.com,cefirates.com,chandlerorchards.com,comicleaks.com,marketdata.app,monumentmetals.com,tapmyback.com,ping.gg,revistaferramental.com.br,hawpar.com,alpacafinance.org,nookgaming.com,enkeleksamen.no,kvest.ee,creatordrop.com,panpots.com,cybernetman.com,bitdomain.biz,gerardbosch.xyz,fort-shop.kiev.ua,accuretawealth.com,resourceya.com,tracktheta.com,adaptive.marketing,camberlion.com,replai.io,trybawaryjny.pl,segops.madisonspecs.com,stresshelden-coaching.de,controlconceptsusa.com,ryaktive.com,tip.etip-staging.etip.io##^script:has-text("join('')")
+alpacafinance.org,tt.live,future-fortune.com,furucombo.app,adventuretix.com,bolighub.dk##^script:has-text('join("")')
+panprices.com,intercity.technology,freelancer.taxmachine.be,kodalia.com,adria.gg,fjlaboratories.com,emanualonline.com,abhijith.page,helpmonks.com##^script:has-text(api.dataunlocker.com)
+||eldorado.gg/main.$script,1p,replace=/"\}\,[a-zA-Z]+:\{scriptName:".*?_data_[a-z0-9]{2,20}"},/"},/
+trybawaryjny.pl##^script[src^="data:text/javascript;base64,CiAgRnVuY"]
+dataunlocker.com##^script:has-text(/^Function\(\"/)
 !#else
-botcomics.com,cefirates.com,chandlerorchards.com,comicleaks.com,marketdata.app,monumentmetals.com,tapmyback.com,ping.gg,revistaferramental.com.br,hawpar.com,alpacafinance.org,nookgaming.com,enkeleksamen.no,kvest.ee,creatordrop.com,panpots.com,cybernetman.com,bitdomain.biz,gerardbosch.xyz,fort-shop.kiev.ua,accuretawealth.com,resourceya.com,tracktheta.com,camberlion.com,replai.io,trybawaryjny.pl##+js(rmnt, script, /join\(\'\'\)/)
-alpacafinance.org,tt.live,future-fortune.com,abhijith.page,madrigalmaps.com,adventuretix.com,bolighub.dk##+js(rmnt, script, /join\(\"\"\)/)
-panprices.com,intercity.technology,freelancer.taxmachine.be,adria.gg,fjlaboratories.com,emanualonline.com##+js(rmnt, script, api.dataunlocker.com)
+botcomics.com,cefirates.com,chandlerorchards.com,comicleaks.com,marketdata.app,monumentmetals.com,tapmyback.com,ping.gg,revistaferramental.com.br,hawpar.com,alpacafinance.org,nookgaming.com,enkeleksamen.no,kvest.ee,creatordrop.com,panpots.com,cybernetman.com,bitdomain.biz,gerardbosch.xyz,fort-shop.kiev.ua,accuretawealth.com,resourceya.com,tracktheta.com,camberlion.com,replai.io,trybawaryjny.pl,segops.madisonspecs.com,stresshelden-coaching.de,controlconceptsusa.com,ryaktive.com,tip.etip-staging.etip.io##+js(rmnt, script, /join\(\'\'\)/)
+alpacafinance.org,tt.live,future-fortune.com,adventuretix.com,bolighub.dk##+js(rmnt, script, /join\(\"\"\)/)
+panprices.com,intercity.technology,freelancer.taxmachine.be,adria.gg,fjlaboratories.com,emanualonline.com,abhijith.page,helpmonks.com##+js(rmnt, script, api.dataunlocker.com)
+||trybawaryjny.pl^$csp=script-src * 'unsafe-inline' 'wasm-unsafe-eval' data: blob: mediastream: filesystem:
+dataunlocker.com##+js(rmnt, script, /^Function\(\"/)
 !#endif
 
 ! https://www.reddit.com/r/uBlockOrigin/comments/opoba7/washington_post_showing_ad_placeholders/
@@ -236,20 +248,28 @@ panprices.com,intercity.technology,freelancer.taxmachine.be,adria.gg,fjlaborator
 ! Ad-Shield
 ! https://github.com/uBlockOrigin/uAssets/issues/9717
 /^https:\/\/cdn\.jsdelivr\.net\/npm\/[-a-z_]{4,22}@latest\/dist\/script\.min\.js$/$script,3p,match-case
-loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,genshinlab.com,thestockmarketwatch.com,thephoblographer.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,etnewskorea.com,allthekingz.com,gadgets360.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,slobodnadalmacija.hr##+js(set-local-storage-item, adshield-analytics-uuid, $remove$)
-loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,genshinlab.com,thestockmarketwatch.com,thephoblographer.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,etnewskorea.com,allthekingz.com,gadgets360.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,slobodnadalmacija.hr##+js(set-local-storage-item, /_fa_dXVpZA==$/, $remove$)
-loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,genshinlab.com,thestockmarketwatch.com,thephoblographer.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,etnewskorea.com,allthekingz.com,gadgets360.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,slobodnadalmacija.hr##+js(set-local-storage-item, /_fa_Y2FjaGVfaXNfYmxvY2tpbmdfYWNjZXB0YWJsZV9hZHM=$/, $remove$)
-loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,genshinlab.com,thestockmarketwatch.com,thephoblographer.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,etnewskorea.com,allthekingz.com,gadgets360.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,slobodnadalmacija.hr##+js(set-local-storage-item, /_fa_Y2FjaGVfaXNfYmxvY2tpbmdfYWRz$/, $remove$)
-loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,genshinlab.com,thestockmarketwatch.com,thephoblographer.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,etnewskorea.com,allthekingz.com,gadgets360.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,slobodnadalmacija.hr##+js(set-local-storage-item, /_fa_Y2FjaGVfYWRibG9ja19jaXJjdW12ZW50X3Njb3Jl$/, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, adshield-analytics-uuid, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, /_fa_bGFzdF9iZmFfYXQ=$/, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, /_fa_dXVpZA==$/, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, /_fa_Y2FjaGVfaXNfYmxvY2tpbmdfYWNjZXB0YWJsZV9hZHM=$/, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, /_fa_Y2FjaGVfaXNfYmxvY2tpbmdfYWRz$/, $remove$)
+loawa.com,ygosu.com,sportalkorea.com,edaily.co.kr,economist.co.kr,etoday.co.kr,isplus.com,hometownstation.com,honkailab.com,thestockmarketwatch.com,issuya.com,worldhistory.org,etnews.com,iusm.co.kr,dogdrip.net,etoland.co.kr,picrew.me,text-compare.com,fntimes.com,javatpoint.com,lamire.jp,bamgosu.site,allthekingz.com,automobile-catalog.com,maketecheasier.com,thesaurus.net,wfmz.com,thestar.co.uk,yorkshirepost.co.uk,mydaily.co.kr,raenonx.cc,ndtvprofit.com,badmouth1.com,logicieleducatif.fr,taxguru.in,islamicfinder.org,aikatu.jp,secure-signup.net,globalrph.com,sportsrec.com,reportera.co.kr,flatpanelshd.com,videogamemods.com,adintrend.tv,ark-unity.com,cool-style.com.tw,dziennik.pl,eurointegration.com.ua,winfuture.de,freemcserver.net,pravda.com.ua,infinityfree.com,wort-suchen.de,word-grabber.com,palabr.as,motscroises.fr,cruciverba.it,dramabeans.com,mynet.com,sportsseoul.com,smsonline.cloud,meeco.kr,heureka.cz,slobodnadalmacija.hr,ap7am.com,autoby.jp,bg-mania.jp,cinema.com.my,crosswordsolver.com,cruciverba.it,daily.co.jp,dailydot.com,demotywatory.pl,dnevno.hr,dolldivine.com,economictimes.com,forsal.pl,gazetaprawna.pl,giornalone.it,gloria.hr,iplocation.net,j-cast.com,j-town.net,jablickar.cz,jmty.jp,joemonster.org,jutarnji.hr,kompasiana.com,lacuarta.com,laleggepertutti.it,lovelive-petitsoku.com,mamastar.jp,manta.com,mariowiki.com,mediaindonesia.com,mirrored.to,missyusa.com,mistrzowie.org,mlbpark.donga.com,motscroises.fr,netzwelt.de,nmplus.hk,oeffnungszeitenbuch.de,ondemandkorea.com,oradesibiu.ro,oraridiapertura24.it,palabr.as,persoenlich.com,petitfute.com,powerpyx.com,quefaire.be,rabitsokuhou.2chblog.jp,rostercon.com,slashdot.org,sourceforge.net,suzusoku.blog.jp,talkwithstranger.com,the-crossword-solver.com,tportal.hr,tvtv.ca,tvtv.us,watchdocumentaries.com,webdesignledger.com,wort-suchen.de,wouldurather.io,woxikon.*,yutura.net,zagreb.info,golf-live.at,motherlyvisions.com,w.grapps.me,gazetaprawna.pl,pressian.com,kreuzwortraetsel.de,verkaufsoffener-sonntag.com,raetsel-hilfe.de,horairesdouverture24.fr,nyitvatartas24.hu,convertcase.net##+js(set-local-storage-item, /_fa_Y2FjaGVfYWRibG9ja19jaXJjdW12ZW50X3Njb3Jl$/, $remove$)
 meconomynews.com,brandbrief.co.kr,motorgraph.com,topstarnews.net##+js(noeval-if, /07c225f3\.online|content-loader\.com|css-load\.com|html-load\.com/)
+||html-load.com^$domain=manta.com|tportal.hr|tvtropes.org|wouldurather.io|convertcase.net|zeta-ai.io
 !#if cap_html_filtering
 meconomynews.com,brandbrief.co.kr,motorgraph.com##^script:has-text(KCgpPT57bGV0IGU)
-issuya.com,topstarnews.net,islamicfinder.org,secure-signup.net##^script:has-text(error-report.com)
-lamire.jp,gadgets360.com,aikatu.jp##^script[onload*="error-report.com"]
+topstarnews.net,islamicfinder.org,secure-signup.net,dramabeans.com,manta.com,tportal.hr,tvtropes.org,wouldurather.io,convertcase.net##^script:has-text(error-report.com)
+aikatu.jp,adintrend.tv,ark-unity.com,cool-style.com.tw,doanhnghiepvn.vn,mynet.com##^script[onload*="error-report.com"]
 !#else
 meconomynews.com,brandbrief.co.kr,motorgraph.com##+js(rmnt, script, KCgpPT57bGV0IGU)
-issuya.com,topstarnews.net,islamicfinder.org,secure-signup.net##+js(rmnt, script, error-report.com)
+topstarnews.net,islamicfinder.org,secure-signup.net,dramabeans.com,manta.com,tportal.hr,tvtropes.org,wouldurather.io,convertcase.net##+js(rmnt, script, error-report.com)
+||html-load.com^$redirect=noopjs,domain=aikatu.jp|adintrend.tv|ark-unity.com|cool-style.com.tw|doanhnghiepvn.vn|mynet.com
+aikatu.jp,adintrend.tv,ark-unity.com,cool-style.com.tw,doanhnghiepvn.vn,mynet.com##+js(nostif, error-report.com)
 !#endif
+||79180284.xyz^
+||05454674.xyz^
+||78b78ff8.xyz^
+||f33d11b5.xyz^
 
 ! https://github.com/AdguardTeam/AdguardFilters/issues/91230
 ||nsfw.xxx/vendor/fingerprint/fingerprint2.min.js$script,redirect=fingerprint2.js,important
@@ -268,6 +288,7 @@ tacobell.com##+js(set, bmak.js_post, false)
 
 ! https://github.com/AdguardTeam/AdguardFilters/issues/95660
 ||ahentai.top/counter.php
+||caitlin.top/counter.php
 
 ! https://github.com/easylist/easylist/pull/9370
 ||tr.jianshu.com^
@@ -296,7 +317,6 @@ tacobell.com##+js(set, bmak.js_post, false)
 ||wuzhuiso.com^$removeparam=src
 
 ! https://github.com/uBlockOrigin/uAssets/pull/10610
-||statwup.huya.com^
 ||va.huya.com^
 ||e-stat.huya.com^
 
@@ -310,12 +330,6 @@ tacobell.com##+js(set, bmak.js_post, false)
 ! https://github.com/easylist/easylist/issues/6724#issuecomment-1003172754
 ! https://github.com/uBlockOrigin/uAssets/pull/15692#issuecomment-1321098072
 /cfga/jquery.js?$image
-
-! jzzo.com,xxxvogue.net, etc.
-/s/js/ta-2.3.js?
-
-! https://github.com/uBlockOrigin/uAssets/issues/11152#issuecomment-1011094338
-||rjno1.com/cdn-cgi/challenge-platform/h/b/scripts/invisible.js
 
 ! https://github.com/uBlockOrigin/uAssets/issues/11278
 ||mynewsmedia.co/*/Linkpage/ads_stats_controller.php
@@ -349,13 +363,6 @@ endbasic.dev,jmmv.dev##+js(no-xhr-if, method:POST)
 ! https://github.com/uBlockOrigin/uAssets/issues/13059
 ||hdslb.com/bfs/cm/cm-sdk/static/js/bili-collect.js$script,redirect=noop.js,domain=bilibili.com,important
 
-! https://vostanimez.com/Episode/shokei-shoujo-no-ikiru-michi-the-executioner-and-her-way-of-life-vostfr-saison-1-episode-6-streaming-hd/
-||imsdb.pw/player/ip.php
-
-! tarnkappe. info tracking
-tarnkappe.info##+js(aopr, Matomo)
-://posthog.$script,domain=~posthog.com
-
 ! https://assets.acdn.no/pkg/@amedia/browserid/1.1.6/index.js trackers
 ! https://github.com/uBlockOrigin/uAssets/pull/13408#issuecomment-1341756510
 ! ||no/api/aid/users/self?filter=*tracking$xhr
@@ -369,13 +376,6 @@ tarnkappe.info##+js(aopr, Matomo)
 
 ! techpowerup. com ping
 ||techpowerup.com/__botcheck$xhr
-
-! darkreader. org pings
-||stats.darkreader.app^
-||statistics.darkreader.app^
-||counter.darkreader.app^
-||count.darkreader.app^
-||herokudns.com^$xhr,domain=darkreader.org
 
 ! https://github.com/uBlockOrigin/uAssets/issues/14653
 ||hktvmall.com/yuicombo?$script,removeparam=/_ui/shared/common/js/analytics/with-intersection-track.js
@@ -417,6 +417,10 @@ ericdraken.com##^script[async]
 ! doucolle.net analytics
 ||blozoo.info/js/inouttool/
 
+! https://github.com/uBlockOrigin/uAssets/issues/15809
+||hikari.jiocinema.com/v1/batch^
+||hikari.jiocinema.com/v1/track^
+
 ! https://github.com/uBlockOrigin/uAssets/issues/16478
 !||linkedin.com/li/track$xhr,1p
 ! https://github.com/uBlockOrigin/uAssets/issues/22627
@@ -428,7 +432,10 @@ utreon.com##+js(no-xhr-if, utreon.com/pl/api/event method:POST)
 ! https://github.com/uBlockOrigin/uAssets/issues/16731
 /^https:\/\/[0-9a-z]{7,25}\.com\/v2(?:\/0\/)?(?=[-_0-9a-z]{0,84}[A-Z])(?=[-_a-zA-Z]{0,84}[0-9])[-_0-9a-zA-Z]{54,85}(#\?v=[0-9a-f]{32})?$/$script,xhr,3p,match-case
 ! https://github.com/uBlockOrigin/uBlock-discussions/discussions/461
-/^https:\/\/[0-9a-z]{7,25}\.com\/(?:build|bundles|chunks|dist|files|j|public|scripts|static)?\/?[0-9a-f]{6,15}\/?[0-9a-f]{21,36}(?:[-.](?:ma?in|prod|index))?(?:\.js)?$/$script,3p,match-case,redirect=noopjs
+/^https:\/\/[0-9a-z]{7,25}\.com\/(?:assets|build|bundles|chunks|dist|files|j|public|scripts|static)?\/?(?:js\/)?[_0-9a-f]{6,16}\/?[_0-9a-f]{20,120}(?:[-.](?:app|bundle|ma?in|module|prod|index|v\d|vendor))?(?:\.js)?$/$script,3p,match-case,to=com,redirect=noopjs
+/^https:\/\/[0-9a-z]{7,25}\.com\/[a-z]{0,7}\/?(?:js\/)?[_0-9a-f]{6,16}\/?[_0-9a-f]{20,120}(?:[-.][a-z0-9]{2,6})?(?:\.js)?$/$script,3p,match-case,to=com,header=x-datacenter
+||succeedscene.com^$badfilter
+||succeedscene.com^$~script
 
 ! https://github.com/uBlockOrigin/uAssets/issues/16751
 zhihu.com##+js(no-xhr-if, log-sdk.ksapisrv.com/rest/wd/common/log/collect method:POST)
@@ -440,8 +447,9 @@ zhihu.com##+js(no-xhr-if, log-sdk.ksapisrv.com/rest/wd/common/log/collect method
 ||api.bilibili.com/x/internal/gaia-gateway/ExClimbWuzhi$xhr,1p
 
 ! https://github.com/easylist/easylist/issues/14723
-||p.typekit.net/p.css$css,redirect-rule=noop.css
-||p.typekit.net/p.css$css,domain=browserstack.com|bungie.net|robertsspaceindustries.com,redirect=noop.css,important
+! https://github.com/easylist/easylist/commit/547cdd2b5e588437a602ac6a424bf499bbed896f
+||p.typekit.net/p.css^$css,redirect=noop.css
+||p.typekit.net/p.css^$css,domain=athleticpropulsionlabs.com|browserstack.com|bungie.net|petsafe.com|robertsspaceindustries.com,redirect=noop.css,important
 
 ! https://github.com/uBlockOrigin/uAssets/issues/17041
 -telemetry.officeapps.live$ping,xhr
@@ -460,25 +468,18 @@ zhihu.com##+js(no-xhr-if, log-sdk.ksapisrv.com/rest/wd/common/log/collect method
 
 ! redirector
 ||cj.dotomi.com^
-||contentads.click^
 ||new-twinks.com^
-||pingleflavor.xyz^
-||suptrkdisplay.com^
 ||terperbelomo.info^
 ||thebestoffers4you.net^
 ||trck.eczyl.com^
 ||trcp.gamefantech.com^
 ||turbotrck.art^
-||new-psh.com^
 ||track.opt-tds.com^
 ||track.link-tds.com^
 ||freetrckr.com^
 ||news-pewuce.com^
-||tranderous.com^
 ||cjewz.com^
 ||chpok.site^
-||communityease.click^
-||driversign.click^
 ||smartaccess.biz^
 ||adonsonlyd.xyz^
 
@@ -494,6 +495,7 @@ zhihu.com##+js(no-xhr-if, log-sdk.ksapisrv.com/rest/wd/common/log/collect method
 
 ! narrative.com sites
 ||narrativ.com^$domain=androidauthority.com
+||androidauthority.com/api/locate/
 
 ! optimizely-sites
 ! https://github.com/uBlockOrigin/uAssets/issues/18787
@@ -501,9 +503,6 @@ zhihu.com##+js(no-xhr-if, log-sdk.ksapisrv.com/rest/wd/common/log/collect method
 ||optimizely.com^$domain=mindbodygreen.com
 ||mindbodygreen.com/js/optimizely-$script,1p
 mindbodygreen.com##+js(set-local-storage-item, segmentDeviceId, $remove$)
-
-! matomo-sites
-||pl.kukaj.to/kukac.js
 
 ! geoip.cdn.arkadiumhosted.com
 ||geoip.cdn.arkadiumhosted.com^$domain=bestforpuzzles.com|charlotteobserver.com|dailygazette.com|independent.co.uk|miamiherald.com|standard.co.uk|word.tips
@@ -533,7 +532,6 @@ zefoy.com##+js(set, firebase.analytics, noopFunc)
 
 ! McClatchy-sites tracking
 /ng.gif?s*&e=$image,strict3p
-||logging.pw.adn.cloud^
 
 ! https://github.com/easylist/easylist/pull/16317#issuecomment-1593693211
 !||analytics-sdk.yle.fi^$script,1p,important
@@ -579,7 +577,6 @@ bikesales.com.au##^html > head > :is([name="canonical"], [rel="canonical"]):not(
 /^https:\/\/kick\.com\/[0-9A-z]{16}\/[0-9A-z]{16}\?apiKey=/$script,1p,match-case,domain=kick.com
 
 ! https://www.reddit.com/r/uBlockOrigin/comments/1576b91/this_malicious_script_should_be_blocked/
-||protesidenext.com^
 ||simonzody.com^
 
 ! https://www.nickjr.com/video/n0d0md/gabby-s-dollhouse-gabby-s-dollhouse-official-trailer
@@ -592,23 +589,286 @@ bikesales.com.au##^html > head > :is([name="canonical"], [rel="canonical"]):not(
 ! https://github.com/uBlockOrigin/uAssets/issues/19221
 ||ab.blogs.es/abtest.png^$image,3p,domain=xataka.com|trendencias.com,redirect=1x1.gif,important
 
+! Bounce/Click trackers
+! https://github.com/uBlockOrigin/uAssets/issues/25925
+://www.wattpad.com/et?$image
+||wattpad.com/et*^l=http$doc,urlskip=?l
+
+! https://github.com/uBlockOrigin/uAssets/issues/24153
+! https://github.com/uBlockOrigin/uAssets/issues/25388
+! https://github.com/uBlockOrigin/uAssets/issues/25609
+! https://github.com/uBlockOrigin/uAssets/issues/23590
+@@||track.adtraction.com/*&url=https://www.gog.com/$popup
+||track.adtraction.com/*^url=https://www.gog.com/$doc,urlskip=?url -blocked
+/t/t?a=*&url=http$doc,to=com|dk,urlskip=?url
+
+! https://www.reddit.com/r/uBlockOrigin/comments/1g7m8av/opening_referral_links_from_slickdeals_are/
+! https://soaps.sheknows.com/the-bold-and-the-beautiful/recaps/743811/finn-tells-li-luna-killed-tom-hollis/
+! https://variety.com/2023/digital/news/disney-plus-first-four-indiana-jones-movies-exclusive-merch-1235629165/
+! https://www.cnet.com/tech/best-labor-day-sales-2024-09-03/
+! https://www.hunker.com/13770331/best-headboards/
+! https://pcpartpicker.com/forums/topic/247066-everytime-i-click-a-newegg-link-i-get-redirected-to-anrdoezrsnet
+! https://www.purewow.com/fashion/four-bs-french-outfit-staples
+! https://github.com/uBlockOrigin/uAssets/issues/26126
+! https://www.space.com/drone-deals
+! https://www.nbcnews.com/select/shopping/amazon-black-friday-deals-2024-rcna182061
+! https://www.dealnews.com/
+/^https?:\/\/(?:[^.]+\.){2}(?:com|io|net)\/[a-zA-Z0-9]{6}\?subId1=[^&]+&u=http/$doc,to=com|io|net,urlskip=?u +https
+/^https?:\/\/(?:[^.]+\.){2}(?:com|io|net)\/c(?:\/\d+){3}\/?\?.*?&?u=http/$doc,to=com|io|net,urlskip=?u +https
+/^https?:\/\/(?:[^.]+\.){2}(?:com|io|net)\/c(?:\/\d+){3}\/?\?.*?&?url=http/$doc,to=com|io|net,match-case,urlskip=?url +https
+/^https?:\/\/(?:[^.]+\.){2}(?:com|io|net)\/c(?:\/\d+){3}\/?\?.*?&?URL=http/$doc,to=com|io|net,match-case,urlskip=?URL +https
+/^https?:\/\/www\.[a-z]+\.(?:com|net)\/click-\d{6,7}-\d{8}\b.*?[?&]url=http/$doc,to=com|net,match-case,urlskip=?url
+/^https?:\/\/www\.[a-z]+\.(?:com|net)\/click-\d{6,7}-\d{8}\b.*?[?&]URL=http/$doc,to=com|net,match-case,urlskip=?URL
+/Proxy.ashx?*&GR_URL=http$doc,urlskip=?GR_URL
+||clicks.trx-hub.com/*^q=http$doc,urlskip=?q
+||shop-links.co/link*^url=http$doc,urlskip=?url
+||prf.hn/click/*/destination:http$doc,urlskip=/\/destination:([^\/]+)/ -uricomponent
+||7tiv.net/*^u=http$doc,urlskip=?u +https
+! https://github.com/uBlockOrigin/uAssets/issues/23729
+||go.redirectingat.com/*^url=http$doc,urlskip=?url
+||go.skimresources.com/*^url=http$doc,urlskip=?url
+
+! https://github.com/uBlockOrigin/uAssets/issues/26126
+||click.linksynergy.com/*^murl=http$doc,urlskip=?murl
+||bestbuy.7tiv.net/c/*^u=https%3A%2F%2Fwww.bestbuy.com$doc,urlskip=?u -blocked
+
+! https://www.namecheap.com/support/knowledgebase/article.aspx/10127/55/how-to-link-to-a-domain-search-result-page-on-namecheapcom/
+! https://sandimaciver.com/simon-says-stamp-bee-yourself-4-cards-from-1-kit-video/
+/r.cfm*^urllink=$document,urlskip=?urllink +https,to=shareasale-analytics.com|shareasale.com
+
+! https://otherweb.com/n/jql8n85J
+! https://upload.trinituner.com/v4/forums/viewtopic.php?t=319216&start=7500
+||cc.*.com/v1/otc/*?merchant=*&url=http$doc,to=com,urlskip=?url
+
+! https://github.com/brave/adblock-lists/commit/c6c8a9d0eafd52fba4a1c63d1e33404d90cbcad2
+||click.pstmrk.it/*/$document,urlskip=/\.pstmrk\.it\/[23][mst]{0,2}\/([^\/?#]+)/ -uricomponent +https
+
+! https://x.com/LeBlorstOfTimes/status/1802874950132318572
+! https://docs.planethowl.com/en/stable/clickmate.html
+||howl.me/link*^url=http$doc,urlskip=?url
+||howl.link/link*^url=http$doc,urlskip=?url
+
+! https://www.engadget.com/samsung-galaxy-s23-ultra-review-specs-price-photo-and-video-take-center-stage-140034341.html
+||shopping.yahoo.com/rdlw*^gcReferrer=http$doc,urlskip=?gcReferrer
+
+! https://www.flexoffers.com/new-features/new-deep-linking-url-structure/
+||track.flexlinks.com/a.ashx*^url=http$doc,urlskip=?url
+! https://jljbacktoclassic.com/archives/16956
+||track.flexlinkspro.com/a.ashx*^url=http$doc,urlskip=?url
+
+! https://docs.fmtc.co/kb/pepperjam
+! https://www.youtube.com/watch?v=HmonnOY9YK8
+/t/*^url=http$doc,urlskip=?url,to=gopjn.com|pjatr.com|pjtra.com|pntra.com|pntrac.com|pntrs.com
+
+! https://uncrate.com/everyday-carry-hacienda/
+||wordseed.com/go/*^url=http$doc,urlskip=?url
+||visit.ws/visit/*^url=http$doc,urlskip=?url
+||go.uncrate.com/*^url=http$doc,urlskip=?url
+
+! https://github.com/brave/adblock-lists/commit/576f306ba08f7be55e7635bd6b6e833250a8add7
+! https://www.reddit.com/r/Muna/comments/1ea9h93/aftertaste_released_news/
+||llo.to/e/*^url=http$doc,urlskip=?url
+||events.laylo.com/r/redirect*^link=http$urlskip=?link
+
+! https://www.reddit.com/r/uBlockOrigin/comments/10kryo7/streaklinkscom/
+! https://capd.mit.edu/experiences/hackmit/
+! https://econ.georgetown.edu/ug_opportunities/pre-doc-opportunity-stanford-law-school-empirical-research-fellowship/
+! https://agilebrandguide.com/591-building-an-accessible-digital-experience-with-jennifer-griffin-smith-acquia/
+||streaklinks.com/*/http$doc,urlskip=/\bstreaklinks\.com\/[^\/]+\/https?%3A%2F%2F([^\/?#]+)/ -uricomponent +https
+||streak-link.com/*/http$doc,urlskip=/\bstreak-link\.com\/[^\/]+\/https?%3A%2F%2F([^\/?#]+)/ -uricomponent +https
+
+! https://github.com/brave/brave-browser/issues/30731
+||app.hive.co/email/elt/*^next=http$doc,urlskip=?next
+
+! https://github.com/brave/adblock-lists/commit/0b6eae9de4f07ff53f402303316d7ec651f33434
+! https://github.com/AdguardTeam/AdGuardSDNSFilter/issues/1784
+||digidip.net/visit?*url=http$doc,urlskip=?url
+||action.metaffiliation.com/trk.php*^redir=http$doc,urlskip=?redir
+
+! https://unknowns.de/forum/thread/23727-innovation-ultimate/
+||backerkit.com/ahoy/messages/*/click?*url=http$doc,urlskip=?url
+
+! https://forums.majorgeeks.com/threads/bizrate-redirect.298636/
+||rd.bizrate.com/rd*^t=http$doc,urlskip=?t +https
+
+! https://forum.squarespace.com/topic/211400-link-to-google-form-disappeared-in-email/
+||engage.squarespace-mail.com/r*^u=http$doc,urlskip=?u
+
+! https://www.blackhatworld.com/seo/grab-your-shopify-120-day-trial-d.1386267/
+! https://github.com/brave/adblock-lists/issues/993
+/Prod/link-tracker?*redirectUrl=aHR0c$doc,urlskip=?redirectUrl -base64 -uricomponent +https
+
+! https://success.awin.com/s/article/What-does-an-affiliate-link-look-like
+! https://success.awin.com/articles/en_US/Knowledge/What-does-an-affiliate-link-look-like
+! https://shutupandtakemyyen.com/product/pokemon-giant-cubone-skull-patch/
+! https://support.mozilla.org/en-US/questions/832144
+.php?*&p=http$doc,to=awin1.com,urlskip=?p +https
+.php?*&ued=http$doc,to=awin1.com,urlskip=?ued +https
+
+! https://www.chip.de/news/MediaMarkt-liefert-noch-kostenlos-Standard-und-Uberlieferservice-fuer-Null-Euro_184676397.html
+||x.chip.de/linktrack/button/?url=http$doc,urlskip=?url
+||de/trck/eclick/*^url=http$doc,to=pvn.mediamarkt.de|pvn.saturn.de,urlskip=?url
+
+! https://www.reddit.com/r/MailChimp/comments/1c884qx/published_emails_trigger_your_connection_is_not/
+||mailchimp.com/mctx/clicks?url=http$doc,urlskip=?url
+
+! https://castbox.fm/episode/The-State-of-Influencer-Marketing-with-Andrew-Kamphey-id3097940-id286565488
+||t.mailpgn.com/l/*^fl=http$doc,urlskip=?fl
+
+! https://career.cuhk.edu.cn/en/job/view/id/459429
+||jsv3.recruitics.com/redirect*^rx_url=http$doc,urlskip=?rx_url
+
+! https://tenki.jp/
+||app.adjust.com/*^redirect=http$doc,urlskip=?redirect
+! https://saz-aktuell.com/so-geht-versicherung-heute-in-3-steps-perfekt-abgesichert/
+||app.adjust.com/*^fallback=http$doc,urlskip=?fallback
+
+! https://www.twitch.tv/officialtopgun/about
+||t.cfjump.com/*^Url=http$doc,urlskip=?Url
+
+! https://www.zen-cart.com/showthread.php?113326-Banner-Manager-Message-The-connection-was-refused-when-attempting-to-contact-localho
+! https://github.com/brave/adblock-lists/pull/897
+||clixgalore.com/Lead.aspx*^LP=$doc,urlskip=?LP -uricomponent +https
+! https://github.com/brave/adblock-lists/pull/770
+||clixgalore.com/Lead.aspx*^AffDirectURL=$doc,urlskip=?AffDirectURL -uricomponent +https
+
+! https://github.com/brave/adblock-lists/issues/894
+||ojrq.net/p/?return=http$doc,urlskip=?return +https
+||d.agkn.com/pixel/*^l1=http$doc,urlskip=?l1
+
+! https://experienceleague.adobe.com/en/docs/audience-manager/user-guide/implementation-integration-guides/media-data-integration/click-data-pixels
+||demdex.net/*^d_rd=http$doc,urlskip=?d_rd +https
+
+! https://github.com/brave/adblock-lists/issues/892
+||api.bam-x.com/api/v1/clickmate/*^url=http$doc,urlskip=?url
+
+! https://pub-docs.valuecommerce.ne.jp/docs/as-63-item-api/
+||valuecommerce.com/servlet/*^vc_url=http$doc,urlskip=?vc_url +https
+! https://jmty.jp/ibaraki/sale-hom/article-1662iu
+||valuecommerce.com/resolve/*^u=http$doc,urlskip=?u +https
+||valuecommerce.ne.jp/cgi-bin/*^vc_url=http$doc,urlskip=?vc_url +https
+||affiliate.shopping.yahoo.co.jp/entry*^vc_url=http$doc,urlskip=?vc_url +https
+
+! https://dev.tradedoubler.com/crossdevice/publisher/
+||tradedoubler.com/click*^url=http$doc,urlskip=?url
+||redir.tradedoubler.com/projectr/?_td_deeplink=http$doc,urlskip=?_td_deeplink
+
+! https://docs.webgains.dev/docs/platform-api-1/e0818c5e27f62-get-feed-products
+||track.webgains.com/click.html*^wgtarget=http$doc,urlskip=?wgtarget
+
+! https://samanthareneehansen.com/
+||nordstrom.com/Linkshare*^url=http$doc,urlskip=?url
+||sephora.com/affiliates.jsp*^url=http$doc,urlskip=?url
+
+! https://github.com/brave/adblock-lists/commit/7666f7556747ff9f57646b827b16640f2cfe479b
+||nutribullet.com/t/*^url=http$doc,urlskip=?url
+||getprice.com.au/prodhits.aspx*^link=http$doc,urlskip=?link
+
+! https://forums.redflagdeals.com/henrys-used-camera-equipment-20-off-90-day-warranty-ends-march-28-2024-2676433/
+||c.pepperjamnetwork.com/click*^url=http$doc,urlskip=?url
+
+! https://support.avantlink.com/hc/en-us/articles/208058053-Affiliate-Link-Encoder-Affiliate-User-Guide-Automate-Tracking-Links-for-Website-Content
+||avantlink.com/click.php*^url=http$doc,urlskip=?url
+
+! https://www.aashibeauty.com/blogs/hair-blog/best-curly-hair-products-to-transform-your-next-wash-day
+||narrativ.com/api/v0/client_redirect/*^url=http$doc,urlskip=?url +https
+||queue.ulta.com/*^t=http$doc,urlskip=?t
+
+! https://help.icontact.com/customers/s/article/Your-Message-Contains-An-Invalid-Link
+||click.icptrack.com/icp/relay.php*^destination=http$doc,urlskip=?destination +https
+
+! https://www.sport-passion.fr/comparatifs/meilleurs-compteurs-gps-de-velo-et-vtt.php
+||track.effiliation.com/servlet/effi.redir*^url=http$doc,urlskip=?url
+||tradeinn.com/ts/*^trg=http$doc,urlskip=?trg
+||fsx.i-run.fr/*^redir=http$doc,urlskip=?redir
+
+! https://www.planetminecraft.com/mod/star-wars-clone-wars-332-battalion-armor-set/
+||mcpedl.com/leaving/?url=http$doc,urlskip=?url +https
+
+! https://lists.ettus.com/empathy/thread/MP5S6U5Y44IQ7Y2YQWIGIGDGBC36VCKU
+||c212.net/c/link/*^u=http$doc,urlskip=?u +https
+
+! https://www.threads.net/@mosseri/post/C0m-tFjvitg/small-but-notable-update-to-share-weve-updated-the-link-referrer-for-threads-so-
+threads.net##+js(json-prune, require.0.3.0.__bbox.define.[].2.is_linkshim_supported)
+||l.threads.net/?u=http$doc,urlskip=?u
+
+! https://www.bleepingcomputer.com/news/security/googles-mysterious-searchapp-links-leave-android-users-concerned/
+||search.app^*link=http$doc,urlskip=?link
+
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3206#issuecomment-2487392846
+bing.com##+js(href-sanitizer, a[href^="/rebates/welcome?url=http"], ?url)
+||bing.com/ck/a*^u=a1aHR0c$doc,urlskip=/[?&]u=a1(aHR0c[^&#]+)/ -base64 +https
+||bing.com/rebates/welcome?url=http$doc,urlskip=?url
+||bing.com/alink/link?url=http$doc,urlskip=?url
+
+! https://www.avforums.com/threads/philips-oled908-remote.2478922/
+||ds1.nl/redirect/*^dai_url=http$doc,urlskip=?dai_url
+
+! https://www.dealnews.com/
+||c.next2.io/*^link=http$doc,urlskip=?link
+/^https?:\/\/(?:www\.anrdoezrs\.net|cj\.dotomi\.com)\/links(?:-t)?\/\d+\/sid\/[^\/]+\/http/$doc,to=cj.dotomi.com|www.anrdoezrs.net,urlskip=/\/sid\/[^\/]+\/(http[^?]+)/ +https
+! https://github.com/uBlockOrigin/uBlock-issues/issues/1096
+||anrdoezrs.net/links/*/type/dlg/http$doc,urlskip=/\/dlg\/(http[^?]+)/ +https
+
+! https://www.thingiverse.com/thing:4702801
+/tradetracker/?tt=*&r=http$doc,urlskip=?r
+
+! https://www.androidauthority.com/black-friday-deals-2024-3499762/
+! https://github.com/uBlockOrigin/uAssets/issues/26204
+||r.bttn.io/?*&btn_pub_ref=*&btn_url=http$doc,urlskip=?btn_url
+||r.bttn.io/?*&btn_pub_ref=*&btn_desktop_url=http$doc,urlskip=?btn_desktop_url
+
+! https://www.insidehook.com/deals
+||prsm1.com/r?url=http$doc,urlskip=?url
+
+! https://link.theskimm.com/view/6021f603fd42236acb38801cmcvvy.kfzp/c1e7a749
+||link.theskimm.com/click/*/aHR0c$doc,urlskip=/\/click\/[^\/]+\/(aHR0c[^\/]+)/ -base64
+
+! https://www.xda-developers.com/black-friday-laptop-deals/
+||redirect.viglink.com/*^ourl=http$doc,urlskip=?ourl
+||redirect.viglink.com/*^u=http$doc,urlskip=?u
+
+! https://www.zdnet.com/article/best-black-friday-deals-2024-11-28/
+||affportal.bhphoto.com/dl/redventures/*^u=http$doc,urlskip=?u
+
+! https://elotrolado.net/hilo_el-podcast-de-eol-episodio-43-e3-cronica-de-una-muerte-anunciada_2360079
+||dlk.ivoox.com/dlk/*^link=http$doc,urlskip=?link
+
+! https://slickdeals.net/
+||slickdeals.net/i.php?*&u2=http$doc,urlskip=?u2
+||amazon.com/gp/redirect.html?*&location=http$doc,urlskip=?location
+||link.sylikes.com/*^url=http$doc,urlskip=?url
+||sofi.com/atr/p/v1/a?u=http$doc,urlskip=?u
+
+! https://github.com/uBlockOrigin/uBlock-discussions/discussions/775#discussioncomment-10120835
+||justwatch.com/a?*^r=http$doc,urlskip=?r
+||click.trafficguard.ai/*^lpurl=http$doc,urlskip=?lpurl
+
+! https://www.reddit.com/r/uBlockOrigin/comments/1h62o3m/provide_a_clean_url_for_strict_blocks/
+||awstrack.me/L0/http$doc,urlskip=/\/L0\/(http[^\/?#]+)/ -uricomponent +https
+
+! https://forums.malwarebytes.com/topic/283053-legitimate-weblink-from-soundcloud-blocked/
+||gate.sc^*url=http$doc,urlskip=?url
+
+! https://firebase.google.com/docs/dynamic-links/create-manually
+! https://community.flutterflow.io/database-and-apis/post/firebase-dynamic-link-works-fine-on-google-play-store-but-not-on-app-i2tHgRXnxGajPyO
+!#if !env_mobile
+||page.link/*^ofl=http$doc,urlskip=?ofl
+!#endif
+
 ! Click Trackers
 ! https://reddit.com/r/uBlockOrigin/comments/14t3y1d/
 html.duckduckgo.com,lite.duckduckgo.com##+js(href-sanitizer, a[href^="//duckduckgo.com/l/?uddg="], ?uddg)
-! https://androidauthority.com/third-party-reddit-apps-statement-3332238/
-androidauthority.com##+js(href-sanitizer, a[href^="https://androidauth.wpengine.com/wp-json/api/advanced_redirect?ref="], ?ref)
-||androidauthority.com/api/locate/
-! https://pcgamingwiki.com/wiki/Grand_Theft_Auto_V
-pcgamingwiki.com##+js(href-sanitizer, a[href^="https://www.dpbolvw.net/click-"][href*="?url="], ?url)
-pcgamingwiki.com##+js(href-sanitizer, a[href^="https://greenmangaming.sjv.io/c/"][href*="?u="], ?u)
 ! https://starstyle.com
 starstyle.com##+js(href-sanitizer, a[href^="https://go.skimresources.com/"][href*="&url=http"], ?url)
 ! https://insidehook.com/deals
-insidehook.com##+js(href-sanitizer, a[href^="https://click.linksynergy.com/deeplink?id="][href*="&murl="], ?murl)
-insidehook.com##+js(href-sanitizer, a[href*="?"][href*="&url=http"], ?url)
-insidehook.com##+js(href-sanitizer, a[href*="?"][href*="&u=http"], ?u)
+! https://github.com/uBlockOrigin/uAssets/issues/26126
+! https://www.space.com/best-black-friday-deals-sales
+insidehook.com,nbcnews.com,pcpartpicker.com,space.com##+js(href-sanitizer, a[href^="https://click.linksynergy.com/"][href*="link?id="][href*="&murl=http"], ?murl)
 ! [NSFW] https://fap18.net/video/88120176/danny-d-2-milfs-and-that-big-cock?c=milf & https://fap18.net/xid/45560506/ and similar
 fap18.net,xxxmom.net,fuck55.net,gofucker.com,sexu.tv,vid123.net,babe8.net,beeg.porn##+js(href-sanitizer, a[href^="/vp/player/to/?u=http"]\, a[href^="/vp/download/goto/?u=http"], ?u)
+/vp/player/to/?u=http$doc,urlskip=?u
+/vp/download/goto/?u=http$doc,urlskip=?u
 ! [NSFW] https://losporn.org/black-beautys-10-watch-online-free and similar
 ! https://github.com/uBlockOrigin/uAssets/issues/20330
 losporn.org,streamporn.li,pandamovies.org,bananamovies.org,xopenload.net,adultdvdparadise.com,speedporn.net,mangoporn.net,pandamovie.info,mangoporn.co,mangoparody.com,xxxscenes.net,pornkino.cc,watchxxxfree.pw,pandamovie.in,speedporn.pw,watchfreexxx.net,youwatchporn.com,watchpornfree.info,pandamovies.me,xtapes.me,netflixporno.net,pornwish.org,freeomovie.info,fullxxxmovies.me,watchpornx.com,xxxparodyhd.net,xxxstream.me,pornwatch.ws,xopenload.pw,onstreams.net,playpornfree.xyz,pandamovies.pw,streamporn.pw,xopenload.me##+js(href-sanitizer, a[href^="https://drivevideo.xyz/link?link=http"], ?link)
@@ -636,6 +896,7 @@ steamcommunity.com##+js(href-sanitizer, a[href^="https://steamcommunity.com/link
 colab.research.google.com##+js(href-sanitizer, a[href^="https://colab.research.google.com/corgiredirector?site=http"], ?site)
 ! https://www.xda-developers.com/lenovo-yoga-7i-500-deal/
 xda-developers.com##+js(href-sanitizer, a[href^="https://shop-links.co/link/?"][href*="&url=http"], ?url)
+xda-developers.com##+js(href-sanitizer, a[href^="https://redirect.viglink.com/?"][href*="ourl=http"], ?ourl)
 ! https://www.reddit.com/r/uBlockOrigin/comments/17psek6/what_exactly_is_jdoqocycom_and_why_does_every/
 isthereanydeal.com##+js(href-sanitizer, a[href^="http://www.jdoqocy.com/click-"][href*="?URL=http"], ?URL)
 isthereanydeal.com##+js(href-sanitizer, a[href^="https://track.adtraction.com/t/t?"][href*="&url=http"], ?url)
@@ -650,6 +911,47 @@ slickdeals.net##+js(href-sanitizer, a[href*="go.redirectingat.com"][href*="url=h
 slickdeals.net##+js(href-sanitizer, a[href^="https://slickdeals.net/?"][href*="u2=http"], ?u2)
 ! https://github.com/uBlockOrigin/uAssets/issues/23590
 dk.pcpartpicker.com##+js(href-sanitizer, a[href^="https://online.adservicemedia.dk/"][href*="deeplink=http"], ?deeplink)
+! https://github.com/uBlockOrigin/uBlock-discussions/discussions/775#discussioncomment-10120835
+justwatch.com##+js(href-sanitizer, 'a[href*=".justwatch.com/a?"][href*="&r=http"]', ?r)
+! https://variety.com/2023/digital/news/disney-plus-first-four-indiana-jones-movies-exclusive-merch-1235629165/
+variety.com##+js(href-sanitizer, a[href^="https://clicks.trx-hub.com/"][href*="bn5x.net"], ?q?u)
+! https://www.engadget.com/samsung-galaxy-s23-ultra-review-specs-price-photo-and-video-take-center-stage-140034341.html
+engadget.com##+js(href-sanitizer, a[href^="https://shopping.yahoo.com/rdlw?"][href*="gcReferrer=http"], ?gcReferrer)
+! https://github.com/uBlockOrigin/uAssets/issues/25754
+! https://soaps.sheknows.com/the-bold-and-the-beautiful/recaps/743811/finn-tells-li-luna-killed-tom-hollis/
+! https://www.hunker.com/13770331/best-headboards/
+! https://otherweb.com/n/jql8n85J
+! https://pcgamingwiki.com/wiki/Grand_Theft_Auto_V
+! https://www.cnet.com/tech/best-labor-day-sales-2024-09-03/
+! https://www.purewow.com/fashion/four-bs-french-outfit-staples
+! https://www.space.com/drone-deals
+! https://jljbacktoclassic.com/archives/16956
+! https://www.dogfoodadvisor.com/best-dog-foods/best-puppy-foods/
+! https://www.androidauthority.com/black-friday-deals-2024-3499762/
+cnet.com##+js(set, Object.prototype.updateModifiedCommerceUrl, noopFunc)
+cnet.com,dogfoodadvisor.com,hunker.com,insidehook.com,nbcnews.com,pcgamingwiki.com,pcpartpicker.com,purewow.com,sheknows.com,space.com,streetinsider.com,zdnet.com##+js(href-sanitizer, 'a[href*="?"][href*="u=http"]:is([href*=".com/c/"],[href*=".io/c/"],[href*=".net/c/"],[href*="?subId1="],[href^="https://affportal.bhphoto.com/dl/redventures/?"])', ?u)
+androidauthority.com,cnet.com,hunker.com,insidehook.com,jljbacktoclassic.com,nbcnews.com,otherweb.com,pcpartpicker.com,pcgamingwiki.com,purewow.com,space.com,sport-passion.fr,zdnet.com##+js(href-sanitizer, 'a[href*="?"][href*="url=http"]:is([href^="https://cc."][href*=".com/v1/otc/"][href*="merchant="],[href^="https://go.skimresources.com"],[href^="https://go.redirectingat.com"],[href^="https://shop-links.co/link"],[href^="https://track.effiliation.com/servlet/effi.redir?"],[href*=".com/a.ashx?"],[href^="https://www."][href*=".com/t/"],[href*=".prsm1.com/r?"],[href*=".com/click-"],[href*=".net/click-"],a[href*=".com/t/t?a="],a[href*=".dk/t/t?a="])', ?url)
+space.com,tomshardware.com,zdnet.com##+js(href-sanitizer, a[href*="/Proxy.ashx?"][href*="GR_URL=http"], ?GR_URL)
+! https://www.windowscentral.com/software-apps/opera-will-independently-continue-supporting-ublock-origin
+windowscentral.com##+js(href-sanitizer, a[href^="https://go.redirectingat.com/"][href*="&url=http"], ?url)
+! https://shutupandtakemyyen.com/product/pokemon-giant-cubone-skull-patch/
+! https://www.thisiswhyimbroke.com/white-elephant-gifts/
+insidehook.com,nbcnews.com,shutupandtakemyyen.com,space.com,thisiswhyimbroke.com,xda-developers.com##+js(href-sanitizer, a[href*="awin1.com/"][href*=".php?"][href*="ued=http"], ?ued)
+insidehook.com,nbcnews.com,shutupandtakemyyen.com,space.com,thisiswhyimbroke.com,xda-developers.com##+js(href-sanitizer, a[href*="awin1.com/"][href*=".php?"][href*="p=http"], ?p)
+! https://forums.redflagdeals.com/henrys-used-camera-equipment-20-off-90-day-warranty-ends-march-28-2024-2676433/
+forums.redflagdeals.com##+js(href-sanitizer, a.autolinker_link[href*=".com/t/"][href*="url=http"], ?url)
+! https://www.sport-passion.fr/comparatifs/meilleurs-compteurs-gps-de-velo-et-vtt.php
+sport-passion.fr##+js(href-sanitizer, a[rel="sponsored nofollow"][href^="https://fsx.i-run.fr/?"][href*="redir=http"], ?redir)
+sport-passion.fr##+js(href-sanitizer, a[rel="sponsored nofollow"][href*=".tradeinn.com/ts/"][href*="trg=http"], ?trg)
+! https://jljbacktoclassic.com/archives/16956
+insidehook.com,jljbacktoclassic.com##+js(href-sanitizer, a[href*=".com/r.cfm?"][href*="urllink=http"], ?urllink)
+! https://soundcloud.com/user-182079869/premera-klipa-leonid-agutin-vladimir-presnyakov-dnk
+soundcloud.com##+js(href-sanitizer, a[href^="https://gate.sc"][href*="?url=http"], ?url)
+! https://github.com/uBlockOrigin/uAssets/issues/7950
+slant.co##+js(trusted-replace-argument, HTMLAnchorElement.prototype.getAttribute, 0, json:"class", condition, data-direct-ad)
+
+! https://github.com/uBlockOrigin/uAssets/issues/24675 - click tracking
+||cdn.digg.com/fragments/homepage/static/view-frontpage.js
 
 ! https://chataigpt.org
 /detroitchicago/dpv.gif?$image
@@ -659,10 +961,11 @@ dk.pcpartpicker.com##+js(href-sanitizer, a[href^="https://online.adservicemedia.
 ! fastly click-through
 beaumontenterprise.com,chron.com,ctinsider.com,ctpost.com,expressnews.com,houstonchronicle.com,lmtonline.com,middletownpress.com,mrt.com,newstimes.com,nhregister.com,registercitizen.com,sfchronicle.com,stamfordadvocate.com,thehour.com,timesunion.com##+js(cookie-remover, realm.cookiesAndJavascript)
 ! heavyfetish.com tracking
+! https://github.com/uBlockOrigin/uAssets/issues/15185#issuecomment-2249740629
 heavyfetish.com##+js(set, flashvars.event_reporting, '')
 heavyfetish.com##+js(cookie-remover, kt_qparams)
-heavyfetish.com##+js(cookie-remover, kt_ips)
 heavyfetish.com##+js(cookie-remover, kt_referer)
+heavyfetish.com,severeporn.com##+js(cookie-remover, kt_ips)
 ! https://github.com/uBlockOrigin/uAssets/issues/18588
 ! https://github.com/uBlockOrigin/uAssets/commit/bae8d13992b1c754f83dc268060a8079973d3253#commitcomment-118856194
 nypost.com,pagesix.com##+js(json-prune, dataLayer.trackingId user.trackingId)
@@ -674,12 +977,19 @@ factable.com##+js(cookie-remover, hive_geoloc)
 watchporn.to##+js(cookie-remover, kt_ips)
 ! https://www.bing.com/
 ! https://www.msn.com/en-us/money/markets/elon-musk-s-outlook-on-our-future-turns-dour/ar-AA1iZxwn
-bing.com,msn.com##+js(cookie-remover, MicrosoftApplicationsTelemetryDeviceId)
+! https://github.com/uBlockOrigin/uAssets/issues/24667
+bing.com,msn.com,web.skype.com##+js(cookie-remover, MicrosoftApplicationsTelemetryDeviceId)
+web.skype.com##+js(cookie-remover, MicrosoftApplicationsTelemetryFirstLaunchTime)
 ! https://capcom.fandom.com/wiki/Gallery:Bishamon
 ! fandom.com##+js(set-cookie, tracking_session_id, OK, , reload, 1)
 fandom.com##+js(set-cookie, Geo, OK)
 ! https://www.clickorlando.com/weather/2023/09/06/cone-computer-models-more-lee-forecast-to-become-major-hurricane/
 clickorlando.com##+js(set-cookie, bitmovin_analytics_uuid, OK)
+! https://www.1und1.de/
+1und1.de##+js(cookie-remover, /optimizelyEndUserId|s_fid|sc_tcr|s_cc/)
+1und1.de##+js(set-local-storage-item, /optimizely_data|tealium_timing/, $remove$)
+! Sending tracking cookies
+imgur.com##+js(set, Object.prototype.has_opted_out_tracking, trueFunc)
 
 ! Query parameter stripping
 ! Google ads/analytics
@@ -691,6 +1001,10 @@ $removeparam=gclid
 $removeparam=_gl
 ! https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 $removeparam=dclid
+! https://support.google.com/analytics/answer/11479699
+! https://github.com/AdguardTeam/AdguardFilters/issues/162080
+! https://github.com/DandelionSprout/adfilt/issues/715
+$removeparam=srsltid
 ! Facebook analytics
 $removeparam=fbclid
 $removeparam=fb_action_ids
@@ -823,6 +1137,23 @@ $removeparam=ss_email_id
 $removeparam=et_rid
 ! https://github.com/brave/brave-browser/issues/37971
 $removeparam=bbeml
+! https://github.com/brave/brave-browser/issues/39575
+! https://stackoverflow.com/questions/37882810/what-is-meaning-of-branch-match-id
+$removeparam=_branch_match_id
+$removeparam=_branch_referrer
+! https://github.com/brave/brave-browser/issues/40716
+$removeparam=_bhlid
+! https://github.com/DandelionSprout/adfilt/discussions/163#discussioncomment-8036123
+! https://ads.tiktok.com/help/article/tiktok-click-id
+$removeparam=sms_click
+$removeparam=sms_source
+$removeparam=sms_uph
+$removeparam=ttclid
+! https://help.emarsys.com/hc/en-us/articles/5860708183441-Changing-the-contact-identification-method-in-Web-Extend
+! https://github.com/brave/brave-browser/issues/43077
+$removeparam=sc_customer
+$removeparam=sc_eh
+$removeparam=sc_uid
 ! https://github.com/DandelionSprout/adfilt/discussions/163#discussioncomment-5867802
 $removeparam=asc_campaign,domain=aboutamazon.com|amazon.*|amzn.to
 $removeparam=asc_refurl,domain=aboutamazon.com|amazon.*|amzn.to
@@ -847,7 +1178,8 @@ $removeparam=s,domain=twitter.com|x.com
 ||www.ebay.$removeparam=mkevt
 ||www.ebay.$removeparam=mkcid
 ||www.ebay.$removeparam=_trkparms
-||www.ebay.$removeparam=_trksid
+! https://github.com/uBlockOrigin/uAssets/issues/25247
+! ||www.ebay.$removeparam=_trksid
 ||www.ebay.$removeparam=amdata
 ||www.ebay.$removeparam=mkrid
 ||www.ebay.$removeparam=campid
@@ -856,6 +1188,12 @@ $removeparam=s,domain=twitter.com|x.com
 ||instagram.com^$removeparam=ig_rid
 ||instagram.com^$removeparam=igsh
 $removeparam=igshid,domain=instagram.com|threads.net
+! msn.com url tracking
+||msn.com^$doc,removeparam=ocid
+||msn.com^$doc,removeparam=pc
+||msn.com^$doc,removeparam=cvid
+||msn.com^$doc,removeparam=ei
+||msn.com^$doc,removeparam=vid
 ! https://github.com/uBlockOrigin/uAssets/issues/18938#issuecomment-1693238481
 ! https://community.brave.com/t/unable-to-open-reddit-com-urls-in-private-tabs/503125/4
 !#if env_firefox
@@ -863,6 +1201,18 @@ $removeparam=igshid,domain=instagram.com|threads.net
 !#endif
 ! Exceptions
 @@||web.archive.org/*/http$removeparam
+! https://github.com/uBlockOrigin/uAssets/issues/25350
+@@||urldefense.com^$removeparam
+
+! https://github.com/DandelionSprout/adfilt/discussions/163#discussioncomment-10269579
+! https://github.com/uBlockOrigin/uAssets/issues/25667
+! https://www.reddit.com/r/uBlockOrigin/comments/1g50usk/amazon_similar_items_link_resolving_to_bad_url/
+/dp/*/ref=$doc,uritransform=/\/ref=[^\/?#]+//,to=www.amazon.*
+! https://jljbacktoclassic.com/archives/16956
+! https://www.ruled.me/supplements/
+||amazon.com/s/ref=$doc,uritransform=/\/ref=[^\/?#]+//
+/gp/*/ref=$doc,uritransform=/\/ref=[^\/?#]+//,to=www.amazon.*
+/^https:\/\/www\.primevideo\.com\/(?:detail|help|offers)[^=]*?\/ref=/$doc,to=primevideo.com,uritransform=/\/ref=[^\/?#]+//
 
 ! https://github.com/easylist/easylist/issues/16468#issuecomment-1691717458
 natgeotv.com##+js(no-xhr-if, /VisitorAPI|AppMeasurement/)
@@ -878,11 +1228,9 @@ natgeotv.com##+js(set, Visitor, {})
 ! https://github.com/uBlockOrigin/uAssets/issues/19954
 ||cdn.cuty.io/fps.js$script
 
-! https://github.com/uBlockOrigin/uAssets/issues/19998
-||roshy.tv/wp-content/uploads/perfmatters/gtagv4.js
-
 ! https://lenovo.com/us/en/legal/copytrade/?orgRef=[...] - Search Google for "Lenovo copyright", Click on the first result
-www.lenovo.com##+js(aost, history.replaceState, injectedScript)
+! https://www.reddit.com/r/uBlockOrigin/comments/1f8yhos/lenovo_site_not_loading/
+www.lenovo.com##+js(trusted-replace-argument, history.replaceState, 2, "''", condition, ?orgRef)
 
 ! https://developers.google.com/tag-platform/tag-manager/server-side/send-data
 ! https://simoahava.com/analytics/server-side-tagging-google-tag-manager
@@ -902,7 +1250,8 @@ www.lenovo.com##+js(aost, history.replaceState, injectedScript)
 androidpolice.com,makeuseof.com,movieweb.com,xda-developers.com##+js(cookie-remover, /articlesRead|previousPage/) 
 
 ! https://github.com/uBlockOrigin/uAssets/issues/20440
-/^https?:\/\/chat\.openai\.com\/ces\/v1\/[a-z]$/$xhr,1p,domain=chat.openai.com,method=post
+! https://github.com/uBlockOrigin/uAssets/issues/26578
+/^https?:\/\/chatgpt\.com\/ces\/v1\/[a-z]$/$xhr,domain=chatgpt.com|openai.com|sora.com,method=post
 
 ! https://github.com/uBlockOrigin/uAssets/issues/20530
 airtel.in##+js(no-xhr-if, analytics/bulk-pixel)
@@ -923,11 +1272,6 @@ preisjaeger.at##+js(href-sanitizer, a[href*="https://www.preisjaeger.at/visit/"]
 promodescuentos.com##+js(href-sanitizer, a[href*="https://www.promodescuentos.com/visit/"][title^="https://"], [title])
 pelando.com.br##+js(href-sanitizer, a[href*="https://www.pelando.com.br/api/redirect?url="], ?url)
 ! desidime.com##+js(href-sanitizer, a[href*="https://www.desidime.com/links?ref=][href*="&url="], &url)
-
-! https://www.aachener-zeitung.de/
-||r.aachener-zeitung.de^
-||prod-mhaa.mhtr.be^
-||mhtr.be/public/tr/tracker.min.js
 
 ! https://github.com/uBlockOrigin/uAssets/issues/21342
 proboards.com,winclassic.net##+js(rmnt, script, vglnk)
@@ -965,14 +1309,12 @@ coursera.org##+js(no-fetch-if, eventing)
 ! https://github.com/uBlockOrigin/uAssets/issues/22295
 ||cmp.*.no^*/metrics/$important
 
-! https://github.com/uBlockOrigin/uAssets/issues/22380
-||fsho.st/tracker.js^$script,domain=fshost.me
-
 ! https://github.com/uBlockOrigin/uAssets/issues/22493
 /^https:\/\/mudah\.my\/[a-zA-Z0-9]{16}\/[a-zA-Z0-9]{16}\?apiKey=/$script,1p,domain=mudah.my
 
 ! https://github.com/uBlockOrigin/uAssets/issues/20586#issuecomment-1949649857
 ! m.youtube.com,music.youtube.com,tv.youtube.com,www.youtube.com,youtubekids.com,youtube-nocookie.com##+js(href-sanitizer, a[href^="https://www.youtube.com/redirect?event=video_description"][href*="&q=http"], ?q)
+||youtube.com/redirect?*^q=http$urlskip=?q +https
 
 ! https://github.com/uBlockOrigin/uAssets/issues/22631#issuecomment-1962238669
 ||view.mngusr.com^$domain=chapmanganato.to|manganato.com
@@ -983,19 +1325,248 @@ coursera.org##+js(no-fetch-if, eventing)
 ! https://www.royalroad.com/home
 ||royalroad.com/dist/sentry.js$script
 
-! https://github.com/easylist/easylist/issues/18917
-||svc.eu01.miro.com^$badfilter
-
 ! https://github.com/uBlockOrigin/uAssets/issues/23299
 streamin.me##^responseheader(set-cookie)
 
-! https://brilliant.org/wiki/transience-and-recurrence/
-||brilliant.org/amplitude/$1p
-||analytics-prod-*.amazonaws.com^$domain=brilliant.org
+! https://github.com/uBlockOrigin/uAssets/issues/24130
+||api.modrinth.com/analytics/
 
 ! https://dev.to/oliverjumpertz/making-good-use-of-ts-expect-error-in-typescript-1f41
 dev.to##+js(cookie-remover, ahoy_visitor)
 dev.to##+js(cookie-remover, ahoy_visit)
+
+! https://www.autotrader.com/cars-for-sale/electric/cars-between-17000-and-26000/alpharetta-ga
+||partner.awscconsumerinfo.autotrader.com/*/beacon/
+
+! https://github.com/brave/adblock-lists/pull/1850
+advocate-news.com,akronnewsreporter.com,bocopreps.com,bostonherald.com,broomfieldenterprise.com,brushnewstribune.com,buffzone.com,burlington-record.com,canoncitydailyrecord.com,chicagotribune.com,chicoer.com,coloradodaily.com,coloradohometownweekly.com,courant.com,dailybreeze.com,dailybulletin.com,dailycamera.com,dailydemocrat.com,dailyfreeman.com,dailylocal.com,dailynews.com,dailypress.com,dailytribune.com,delcotimes.com,denverpost.com,eastbaytimes.com,eastbaytimes.com,eptrail.com,excelsiorcalifornia.com,fortmorgantimes.com,greeleytribune.com,journal-advocate.com,julesburgadvocate.com,lamarledger.com,lowellsun.com,macombdaily.com,mainlinemedianews.com,marinij.com,mcall.com,mendocinobeacon.com,mercurynews.com,mercurynews.com,montereyherald.com,morningjournal.com,nashobavalleyvoice.com,news-herald.com,nydailynews.com,ocregister.com,oneidadispatch.com,orlandosentinel.com,orovillemr.com,paradisepost.com,pasadenastarnews.com,pilotonline.com,pottsmerc.com,pressandguide.com,pressenterprise.com,presstelegram.com,readingeagle.com,record-bee.com,redbluffdailynews.com,redlandsdailyfacts.com,reporterherald.com,sandiegouniontribune.com,santacruzsentinel.com,saratogian.com,sbsun.com,sentinelandenterprise.com,sgvtribune.com,siliconvalley.com,southplattesentinel.com,sun-sentinel.com,themorningsun.com,thenewsherald.com,theoaklandpress.com,thereporter.com,thereporteronline.com,times-standard.com,timescall.com,timesherald.com,timesheraldonline.com,trentonian.com,troyrecord.com,twincities.com,ukiahdailyjournal.com,voicenews.com,whittierdailynews.com,willitsnews.com##+js(set-session-storage-item, nxt_is_incognito, false)
+
+! https://github.com/uBlockOrigin/uAssets/issues/24577
+pitchfork.com##+js(href-sanitizer, a[href^="https://cna.st/"][data-offer-url^="https://"], [data-offer-url])
+
+! https://www.vpnmentor.com
+||vpnmentor.com/jssdk/track/
+vpnmentor.com##+js(cookie-remover, /_alooma/)
+
+! torrentfreak.com
+||torrentfreak.com/js/script.js
+
+! jiosaavn.com
+||jiosaavn.com/stats.php^
+
+! https://github.com/AdguardTeam/AdguardFilters/pull/185966
+/\/[a-z]{8}\.js\?st=[0-9A-Z]{6,8}$/$script,1p,strict3p,match-case
+
+! https://github.com/easylist/easylist/commit/9145f6e5ba23f6968605120c3ba213a9b92ae2d7
+||fundingchoicesmessages.google.com/i/$script,domain=globo.com,important
+
+! https://github.com/uBlockOrigin/uAssets/issues/24881
+||babia.to/index.php^
+||babia.to/job.php^
+
+! https://www.euronews.com/my-europe/2024/08/11/ditching-generators-and-recycling-buildings-how-paris-did-the-olympics-different
+! https://github.com/easylist/easylist/commit/04e9aa501ca9765523eed25f6409aa15f7e1a7a9
+||g.doubleclick.net/tag/js/gpt.js$script,redirect=googletagservices_gpt.js:5,domain=euronews.com,important
+
+! onlyfans click tracking
+||onlyfans.com/api2/v2/users/clicks-stats^
+||onlyfans.com/away^$urlskip=?url
+
+! https://github.com/uBlockOrigin/uAssets/issues/25016
+||forecast.lemonde.fr/p/action/
+||lemonde.fr/*?s=$xhr,method=post
+
+! spankbang tracking
+||spankbang.com/static/dist/desktop/js/analytics$script
+! https://github.com/uBlockOrigin/uAssets/issues/25974
+spankbang.com##+js(set, send_gravity_event, noopFunc)
+spankbang.com##+js(set, send_recommendation_event, noopFunc)
+
+! https://github.com/uBlockOrigin/uAssets/issues/25180
+perplexity.ai##+js(aost, window.screen.height, setTimeout)
+||perplexity.ai/rest/metrics/collect^$xhr,1p,method=post
+
+! https://github.com/uBlockOrigin/uAssets/issues/25204
+nytimes.com##+js(no-fetch-if, api.theathletic.com/graphql body:/PostEvent|PostImpressions/)
+
+! https://www.oligo.security/blog/0-0-0-0-day-exploiting-localhost-apis-from-the-browser
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3443
+!#if cap_ipaddress
+*$strict3p,ipaddress=0.0.0.0,domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost
+! *$strict3p,ipaddress=::,domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost
+!#endif
+
+! https://github.com/uBlockOrigin/uAssets/issues/25432
+/^https:\/\/[a-z]\d{3}\.[a-z]+\.com\/script\.js$/$script,1p,strict3p,domain=com,redirect=noopjs
+
+! https://github.com/uBlockOrigin/uAssets/issues/25467
+||inficourses.com/_next/static/chunks/pages/course/%5Bslug%5D-$1p,script
+
+! https://github.com/uBlockOrigin/uAssets/issues/25467
+||shrinkearn.com/full?*&type=1$urlskip=?url -base64 +https
+
+! cloudflare.com tracking
+blog.cloudflare.com,www.cloudflare.com##+js(no-fetch-if, method:POST body:zaraz)
+||radar.cloudflare.com/api/analytics
+
+! https://github.com/uBlockOrigin/uAssets/issues/25532
+||udc.yahoo.com^
+
+! https://github.com/uBlockOrigin/uAssets/issues/25558
+||gitbook.com/v1/integrations/googleanalytics/
+
+! https://www.reddit.com/r/uBlockOrigin/comments/1fzfpfj/a_small_issue_with_targetcom/
+!#if env_firefox
+forum.blu-ray.com##a[href][onclick*="this.href"]:remove-attr(/^on(?:click|contextmenu|mouseover)$/)
+!#else
+forum.blu-ray.com##+js(ra, onclick|oncontextmenu|onmouseover, a[href][onclick*="this.href"], stay)
+!#endif
+
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3206#issuecomment-2403795984
+||podtrac.com^*redirect.mp3/$urlskip=/\/redirect\.mp3\/([^?]+\.mp3\b)/ +https
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3206#issuecomment-2406674420
+||pdst.fm/e/$urlskip=/\/e\/([^?]+)/ +https
+||chtbl.com/track/$urlskip=/\/track\/\w+\/([^?]+)/ +https
+||mgln.ai/e/$urlskip=/\/e\/\w+\/([^?]+)/ +https
+||pdrl.fm^$urlskip=/pdrl\.fm\/\w+\/([^?]+)/ +https
+
+! https://github.com/uBlockOrigin/uAssets/issues/25609
+||gog.com/productcard/users/activity/log
+
+! https://github.com/DandelionSprout/adfilt/discussions/163#discussioncomment-10437157
+||onual.com/*^link_t=$doc,uritransform=/#[^\/?]+//
+onual.com##+js(href-sanitizer, a.btn[href^="https://zxro.com/u/?url=http"], ?url)
+
+! https://github.com/AdguardTeam/AdguardFilters/issues/181699
+globo.com##+js(trusted-set, libAnalytics, json: {"status":{"dataAvailable":false}\,"data":{}})
+globo.com##+js(set, libAnalytics.data.get, noopFunc)
+
+! https://github.com/uBlockOrigin/uAssets/issues/25826
+||videovak.com/log/
+
+! https://github.com/uBlockOrigin/uAssets/issues/25759#issuecomment-2445393624
+dailystar.co.uk,mirror.co.uk##+js(no-xhr-if, cmp.inmobi.com/geoip)
+
+! https://github.com/uBlockOrigin/uAssets/issues/25842
+||an.yandex.ru^$script,redirect=noopjs,domain=moyaposylka.ru
+
+! https://github.com/uBlockOrigin/uAssets/issues/25871
+||flaticon.com/_ga?
+
+! https://github.com/uBlockOrigin/uAssets/issues/25885
+||googletagmanager.com/gtag/js$domain=17track.net,important
+
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3440
+bentasker.co.uk##+js(no-xhr-if, method:POST url:pfanalytics.bentasker.co.uk)
+
+! https://www.reddit.com/r/uBlockOrigin/comments/1gi6lcl/cheatographycom_detects_ubo/
+||data.cheatography.com^
+
+! darkreader.org tracking pings CNAME
+||herokudns.com^$xhr,domain=darkreader.org
+
+! https://github.com/uBlockOrigin/uAssets/commit/70472d3fd373bb0a2102be3261e76502782bcb42
+||karistudio.com/wp-content/plugins/wp-statistics/assets/js/tracker.js^$important
+
+! https://github.com/uBlockOrigin/uAssets/issues/26001
+||facebook.com/security/hsts-pixel.gif
+||facebook.com/async/wbloks/log/
+
+! https://github.com/uBlockOrigin/uAssets/issues/16965#issuecomment-1446481850
+||windowspro.de/stats/
+
+! https://github.com/uBlockOrigin/uAssets/issues/24730
+||tvaplus.ca/api/log^
+
+! https://github.com/uBlockOrigin/uAssets/issues/23504
+||startpage.com/sp/dplpxs
+
+! https://github.com/uBlockOrigin/uAssets/issues/25203
+||gigachadlitics.b-cdn.net^
+
+! https://github.com/uBlockOrigin/uAssets/issues/26299
+||substack.com/api/v1/firehose/batch
+
+! https://github.com/uBlockOrigin/uAssets/issues/22792
+||nakedanalytics.net^
+
+! grabify.org - IP logger service
+/^https:\/\/grabify\.org\/[A-Z0-9]+$/$doc
+
+! https://urlscan.io/result/54547ba8-b938-476a-b931-ad6824507b8b/#redirects
+! https://urlscan.io/result/c018947c-61ee-48f7-8a88-147ae8b794a3/#redirects
+||email.stripe.com/CL0/$doc,urlskip=/\/CL0\/(http.*?)\/\d\/[a-f0-9-]+\// -uricomponent
+||q.stripe.com/?domain=$image
+
+! https://github.com/uBlockOrigin/uAssets/issues/26464
+discord.com##+js(no-xhr-if, discord.com/api/v9/science)
+
+! mail tracking
+://www.wattpad.com/et?$image
+://links1.pawns.app/q/$image
+://email-analytics.meetup.com/$image
+://myanimelist.net/pixel?$image
+://myanimelist.net/static/logging.gif?$image
+://rd.remove.bg/CI0/$image
+://mg.mail.notion.so/$image
+.*%2Fwf%2Fopen%3Fupn%3D$image
+.quora.com%2Fqemail%2Fmark_read%3Fct%3D$image
+
+! beacons.ai analytics
+||beacons.ai/api/rtanalytics/
+||beacons.ai/api/public_actions
+
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3325
+||store.steampowered.com/app/usabilitytracking/
+
+! https://github.com/uBlockOrigin/uAssets/issues/26593
+||joinhoney.com/evs
+
+! https://github.com/easylist/easylist/commit/9be6c6b0981b48b4b5e5d5a02d7f0a4870bf9d7c
+! https://www.cornwalllive.com/news/cornwall-news/ufo-sighting-cornwall-family-films-9815680
+||g.doubleclick.net/tag/js/gpt.js$script,xhr,domain=cornwalllive.com,important
+||g.doubleclick.net/gpt/pubads_impl_$domain=cornwalllive.com,important
+
+! https://github.com/AdguardTeam/AdguardFilters/commit/4daa90c90372f1413f6c6790386c80886526a169
+||s.pie.org^
+||t.pie.org^
+
+! https://github.com/uBlockOrigin/uAssets/issues/26644
+||tonordersitye.com/s*&r$urlskip=?r -base64
+
+! https://github.com/uBlockOrigin/uBlock-issues/issues/3504
+||suno.com/metrics/
+||suno.com/v1//rgstr
+||suno.com/monitoring
+
+! https://github.com/ co-pilot error endpoint
+||github.com/_private/browser/errors
+
+! https://github.com/uBlockOrigin/uAssets/issues/26709
+||curseforge.com/linkout$urlskip=?remoteUrl -uricomponent
+
+! razorpay analytics
+||razorpay.com/v1/track
+
+! https://github.com/uBlockOrigin/uAssets/issues/26805
+||bitchute.com/data/1
+
+! https://github.com/uBlockOrigin/uAssets/issues/25438
+||api.flipkart.com/4/data/collector/business
+
+! https://github.com/easylist/easylist/issues/21077
+||internal-api.prolific.com/api/v1/statistics/
+
+! https://github.com/uBlockOrigin/uAssets/pull/26935
+||chat.deepseek.com/api/v0/events$xhr,method=post
+chat.deepseek.com##.ds-theme.ds-modal-wrapper:has-text(uBlock)
+chat.deepseek.com##.ds-modal-overlay
+
+! https://github.com/uBlockOrigin/uAssets/issues/26946
+||sex-empire.org/templates/*/js/metrika.js
+
+! https://github.com/uBlockOrigin/uAssets/issues/26973
+||ipify.org^$domain=realmoasis.com
 
 ! Merge in resource-abuse.txt
 !#include resource-abuse.txt
